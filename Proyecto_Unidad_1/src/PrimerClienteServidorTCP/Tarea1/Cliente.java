@@ -23,7 +23,7 @@ public class Cliente {
     private DataOutputStream msnOut;
     private int host_port;
     private String host_ip, msn;
-    
+    private boolean conect;
     
     public Cliente(int p, String ip){
         this.host_port= p;
@@ -33,26 +33,25 @@ public class Cliente {
 
         Cliente wop = new Cliente(1234, "127.0.0.1");
         wop.openClient();
-        
-        System.out.print("echo: ");
-        wop.mensaje();
-        wop.send();
-        wop.recive();
+        while (wop.conect){
+            wop.mensaje();
+            wop.send();
+            if(wop.msn.equals("exit")){
+                break;
+            }
             
-//        wop.writeMsn("Hola, soy nuevo");
-//        wop.send();
+            wop.recive();
+        }
         wop.closeClient();
     }
     
-    public  void mensaje(){
-        Scanner myObj = new Scanner(System.in); 
-        msn = myObj.nextLine();
-        //return msn;
-    }
+
+
     
     public void openClient(){
         try {
             this.clint= new Socket(this.host_ip,this.host_port);
+            this.conect=true;
             //this.clint.close();
         }catch(IOException ex){
             ex.printStackTrace();
@@ -105,8 +104,9 @@ public class Cliente {
         }
     }
 
-    private void writeMsn(String n) {
-       this.msn = n;
+    private void mensaje() {
+        Scanner myObj = new Scanner(System.in); 
+        msn = myObj.nextLine();
     }
     
     

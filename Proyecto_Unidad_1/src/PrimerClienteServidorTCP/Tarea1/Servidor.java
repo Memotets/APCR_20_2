@@ -47,16 +47,22 @@ public class Servidor {
     public static void main (String []ad){
         Servidor wop = new Servidor();
         wop.openServ();
+        wop.clientConnected();
         while (wop.ServOn){
-            wop.clientConnected();
-            
             wop.recive();
-            wop.send();
-            
-            
-            wop.clientDisconnected();
-            
-            wop.closeServ();
+            if (wop.msn.equals("exit")){
+                wop.clientDisconnected();
+                wop.closeServ();
+                break;
+            }
+            if (wop.msn.indexOf("echo ") == 0){
+                wop.msn = wop.msn.replaceFirst("echo ", "");
+                wop.send();
+                System.out.println("Mensaje enviado");
+            }else{
+                wop.msn =  "Hay un error en su comando, recuerde que solo puede utilizar 'echo' para repetir y 'exit' para salir";
+                wop.send();
+            }            
         }
     }
     public void clientConnected(){
@@ -76,18 +82,7 @@ public class Servidor {
             ex.printStackTrace();
         }
     }
-    public void send (String msn){
-        try {
-            //Flujo de salida
-            this.out = this.clint.getOutputStream();
-             // enviar mensaje al cliente
-            msnOut = new DataOutputStream(out);
-            msnOut.writeUTF("Host: "+msn);
-            
-        } catch (IOException ex) {
-            Logger.getLogger(ClienteTCP.class.getName()).log(Level.SEVERE, null, ex);
-        }    
-    }
+
     public void send (){
         try {
             //Flujo de salida
