@@ -1,12 +1,11 @@
 /*
  * Guillermo Ignacio Bautista Garcia
  * Sockets
- * emular el comando echo de terminal
- * 29/01/20
+ * cliente que pide dns
+ * 30/01/20
  */
  
-package PrimerClienteServidorTCP.Tarea1;
-import PrimerClienteServidorTCP.*;
+package PrimerClienteServidorTCP.Tarea2;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;

@@ -1,13 +1,14 @@
 /*
  * Guillermo Ignacio Bautista Garcia
  * Sockets
- * emular el comando echo de terminal
- * 29/01/20
+ * emular un servidor de dns
+ * 30/01/20
  */
-package PrimerClienteServidorTCP.Tarea1;
+package PrimerClienteServidorTCP.Tarea2;
 import PrimerClienteServidorTCP.*;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 /**
@@ -24,10 +25,18 @@ public class Servidor {
     private DataInputStream msnIn;
     private DataOutputStream msnOut;
     private boolean ServOn;
+    private ArrayList<EstructuraDNS> Lista;
 
     public Servidor(){
         this.port = 1234;
+        Lista = new ArrayList<>();
+        Lista.add(new EstructuraDNS("www.google.com","8.8.8.8"));
+        Lista.add(new EstructuraDNS("www.ejemplo.com","10.123.2.123"));
+        Lista.add(new EstructuraDNS("www.gatosHaciendoCosas.net","6.45.9.182"));
+        Lista.add(new EstructuraDNS("Monografias.com","134.2.34.253"));
+        Lista.add(new EstructuraDNS("www.AscoDeVida.com","204.231.4.23"));
     }
+    
     public void openServ(){
         try {
             this.ServOn = true;
@@ -56,14 +65,11 @@ public class Servidor {
                 wop.closeServ();
                 break;
             }
-            if (wop.msn.indexOf("echo ") == 0){
-                wop.msn = wop.msn.replaceFirst("echo ", "");
-                wop.send();
-                System.out.println("Mensaje enviado");
-            }else{
-                wop.msn =  "Hay un error en su comando, recuerde que solo puede utilizar 'echo' para repetir y 'exit' para salir";
-                wop.send();
-            }
+            wop.Lista.forEach((l) -> {
+                if (l.esIgual(wop.msn)){
+                    wop.send(l);
+                }
+            }); 
         }
     }
     public void clientConnected(){
@@ -77,20 +83,23 @@ public class Servidor {
     }
     public void clientDisconnected(){
         try {
-           // this.clint= new Socket(this.host_ip,this.host_port);
             this.clint.close();
         }catch(IOException ex){
             ex.printStackTrace();
         }
     }
-
-    public void send (){
+    
+    public void send (EstructuraDNS e){
         try {
             //Flujo de salida
             this.out = this.clint.getOutputStream();
              // enviar mensaje al cliente
             msnOut = new DataOutputStream(out);
-            msnOut.writeUTF(msn);
+            if(e.getDominio().equals(msn)){
+                msnOut.writeUTF(e.getIP());
+            }else{
+                msnOut.writeUTF(e.getDominio());
+            }
 
         } catch (IOException ex) {
             Logger.getLogger(ClienteTCP.class.getName()).log(Level.SEVERE, null, ex);
